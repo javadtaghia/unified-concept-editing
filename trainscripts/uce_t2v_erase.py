@@ -16,9 +16,7 @@ def UCE(pipe, edit_concepts, guide_concepts, preserve_concepts, erase_scale, pre
     # Prepare the cross attention weights required to do UCE
     uce_modules = dict()
     all_modules = dict(pipe.unet.named_modules())
-    
-    print(list(filter(lambda x: 'attn2' in x, all_modules.keys())))   
-    
+        
     for name, module in all_modules.items():
         # Exclude temporal models (transformer_in, temp_attentions) - only process spatial Transformer2DModel modules
         if 'attn2' in name and 'temp_attentions' not in name and 'transformer_in' not in name and (name.endswith('to_v') or name.endswith('to_k')):
@@ -116,9 +114,9 @@ if __name__ == '__main__':
     parser.add_argument('--model_id', help='Model to run UCE on', type=str, default="cerspense/zeroscope_v2_576w")
     parser.add_argument('--device', help='cuda devices to train on', type=str, required=False, default='cuda:0')
     
-    parser.add_argument('--erase_scale', help='scale to erase concepts', type=float, required=False, default=1)
-    parser.add_argument('--preserve_scale', help='scale to preserve concepts', type=float, required=False, default=1)
-    parser.add_argument('--lamb', help='lambda regularization term for UCE', type=float, required=False, default=0.5)
+    parser.add_argument('--erase_scale', '-e', help='scale to erase concepts', type=float, required=False, default=1)
+    parser.add_argument('--preserve_scale', '-p', help='scale to preserve concepts', type=float, required=False, default=1)
+    parser.add_argument('--lamb', '-l', help='lambda regularization term for UCE', type=float, required=False, default=0.5)
     
     parser.add_argument('--expand_prompts', help='do you wish to expand your prompts?', choices=['true', 'false'], type=str, required=False, default='false')
     
@@ -244,7 +242,5 @@ if __name__ == '__main__':
     pipe = TextToVideoSDPipeline.from_pretrained(model_id, 
                                                   torch_dtype=torch_dtype).to(device)
     pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
-    
-    print(dict(pipe.unet.named_modules()).keys())
-    
+        
     UCE(pipe, edit_concepts, guide_concepts, preserve_concepts, erase_scale, preserve_scale, lamb, save_dir, exp_name)
