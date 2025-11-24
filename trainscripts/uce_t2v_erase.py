@@ -33,16 +33,23 @@ def UCE(pipe, edit_concepts, guide_concepts, preserve_concepts, erase_scale, pre
         if e in uce_erase_embeds:
             continue
         t_emb = pipe.encode_prompt(prompt=e,
-                                   device=device,
-                                   num_images_per_prompt=1,
-                                   do_classifier_free_guidance=False)
+                    device=device,
+                    num_images_per_prompt=1,
+                    do_classifier_free_guidance=False)
+    # base_emb = t_emb[1]
+        
+        token_inp = pipe.tokenizer(e,
+                            padding="max_length",
+                            max_length=pipe.tokenizer.model_max_length,
+                            truncation=True,
+                            return_tensors="pt",
+                            )
     
-        last_token_idx = (pipe.tokenizer(e,
-                                          padding="max_length",
-                                          max_length=pipe.tokenizer.model_max_length,
-                                          truncation=True,
-                                          return_tensors="pt",
-                                         )['attention_mask']).sum()-2
+        print(token_inp)
+    
+        last_token_idx = (token_inp['attention_mask']).sum()-1
+
+        print(f'Processing concept: {e}, last token index: {last_token_idx}')
     
         # Extract the last token embedding
         base_emb = t_emb[0][:,last_token_idx,:]
@@ -74,7 +81,6 @@ def UCE(pipe, edit_concepts, guide_concepts, preserve_concepts, erase_scale, pre
     
         # Erase Concepts
         for erase_concept, guide_concept in zip(edit_concepts, guide_concepts):
-            # Use the caption-projected embedding for this specific module
             c_i = uce_erase_embeds[erase_concept].T
             v_i_star = uce_guide_outputs[guide_concept][name].T
     
@@ -83,7 +89,6 @@ def UCE(pipe, edit_concepts, guide_concepts, preserve_concepts, erase_scale, pre
     
         # Retain Concepts
         for preserve_concept in preserve_concepts:
-            # Use the caption-projected embedding for this specific module
             c_i = uce_erase_embeds[preserve_concept].T
             v_i_star = uce_guide_outputs[preserve_concept][name].T
     
@@ -96,6 +101,7 @@ def UCE(pipe, edit_concepts, guide_concepts, preserve_concepts, erase_scale, pre
     # save the weights
     uce_state_dict = {}
     for name, parameter in uce_modules.items():
+        print(f'Saving parameter: {name}.weight')
         uce_state_dict[name+'.weight'] = parameter.weight
     save_file(uce_state_dict, os.path.join(save_dir, exp_name+'.safetensors'))
     
