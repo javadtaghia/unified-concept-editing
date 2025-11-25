@@ -48,7 +48,13 @@ To edit concepts with HiDream-I1 (e.g. to enhance "mustache")
 python trainscripts/uce_hidream_erase.py --edit_concepts 'person;man;woman' --preserve_concepts 'person with mustache;man with mustache;woman with mustache'--expand_prompts 'true' --device 'cuda:0' --concept_type 'object' --exp_name 'person_mustache_hidream'
 ```
 
-### Moderating
+### ZeroScopeT2V
+To erase concepts (e.g. "Van Gogh" and "Picasso" simultaneously) for ZeroscopeT2V
+```python
+python trainscripts/uce_t2v_erase.py --model_id 'cerspense/zeroscope_v2_576w'  --edit_concepts 'Van Gogh; Picasso' --guided_concept 'art' --preserve_concepts 'Monet; Rembrandt; Warhol' --device 'cuda:0' --concept_type 'art' --exp_name 'vangogh_uce_t2v'
+```
+
+## Moderating
 ### SDv1.4 and SDXL
 To moderate concepts (e.g. "violence, nudity, harm")
 ```python
@@ -61,7 +67,13 @@ To moderate concepts (e.g. "violence, nudity, harm")
 python trainscripts/uce_flux_erase.py --model_id 'black-forest-labs/FLUX.1-schnell' --edit_concepts 'violence; nudity; harm' --device 'cuda:0' --concept_type 'unsafe' --exp_name 'i2p_flux'
 ```
 
-### Debiasing
+### ZeroScopeT2V
+To moderate concepts (e.g. "violence, nudity, harm")
+```python
+python trainscripts/uce_t2v_erase.py --model_id 'cerspense/zeroscope_v2_576w' --edit_concepts 'violence; nudity; harm' --device 'cuda:0' --concept_type 'object' --exp_name 'i2p_t2v'
+```
+
+## Debiasing
 To debias concepts (e.g. "Doctor, Nurse, Carpenter") against attributes (e.g. "Male, Female") equally in 0.5 ratio each
 ```python
 python trainscripts/uce_sd_debias.py --edit_concepts 'Doctor; Nurse; Carpenter' --debias_concepts 'male; female' --device 'cuda:0' --desired_ratios 0.5 0.5 --exp_name 'debias_sdxl' --model_id 'stabilityai/stable-diffusion-xl-base-1.0'
