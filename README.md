@@ -22,7 +22,16 @@ The code base is based on the `diffusers` package. To get started:
 git clone https://github.com/rohitgandikota/unified-concept-editing.git
 cd unified-concept-editing
 mkdir models
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
+```
+
+Generating weights:
+```
+python trainscripts/uce_sd_erase.py --model_id 'CompVis/stable-diffusion-v1-4' --edit_concepts 'nudity; porn; sex' --concept_type object --save_dir uce --exp_name NSFW --device cuda
+python -c "import torch; from safetensors.torch import load_file; torch.save(load_file('uce/NSFW.safetensors'), 'uce/NSFW.pt')"
+
 ```
 
 ## Training Guide
