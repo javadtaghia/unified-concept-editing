@@ -25,12 +25,22 @@ mkdir models
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-```
 
-Generating weights:
-```
 python trainscripts/uce_sd_erase.py --model_id 'CompVis/stable-diffusion-v1-4' --edit_concepts 'nudity; porn; sex' --concept_type object --save_dir uce --exp_name NSFW --device cuda
-python -c "import torch; from safetensors.torch import load_file; torch.save(load_file('uce/NSFW.safetensors'), 'uce/NSFW.pt')"
+
+```
+TELCOM DEEWAIREALCN:
+```
+python trainscripts/uce_sd_erase.py --model_id 'telcom/deewaiREALCN' --edit_concepts 'nudity; porn; sex' --concept_type object --save_dir uce_2 --exp_name NSFW --device cuda
+
+python trainscripts/uce_sd_erase.py \
+  --model_id "telcom/deewaiREALCN" \
+  --edit_concepts "nudity; porn; sex" \
+  --concept_type object \
+  --save_dir "uce_2" \
+  --exp_name "NSFW_wa" \
+  --device "cuda:0" \
+  --save_format "delta"
 
 ```
 
@@ -67,7 +77,7 @@ python trainscripts/uce_t2v_erase.py --model_id 'cerspense/zeroscope_v2_576w'  -
 ### SDv1.4 and SDXL
 To moderate concepts (e.g. "violence, nudity, harm")
 ```python
-python trainscripts/uce_sd_erase.py --model_id 'CompVis/stable-diffusion-v1-4' --edit_concepts 'violence; nudity; harm' --device 'cuda:0' --concept_type 'unsafe' --exp_name 'i2p'
+python trainscripts/uce_sd_erase.py --model_id 'telcom/deewaiREALCN' --edit_concepts 'violence; nudity; harm' --device 'cuda:0' --save_dir uce_dee2 --concept_type 'unsafe' --exp_name 'NSFW'
 ```
 
 ### FLUX
